@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+
+        <!-- PrimeVue -->
+        <link href="https://unpkg.com/primevue@^3/resources/themes/saga-blue/theme.css" rel="stylesheet" />
+        <link href="https://unpkg.com/primevue@^3/resources/primevue.min.css" rel="stylesheet" />
+        <link href="https://unpkg.com/primeflex@2.0.0/primeflex.min.css" rel="stylesheet" />
+        <link href="https://unpkg.com/primeicons/primeicons.css" rel="stylesheet" />
+
+        <!-- Dependencies -->
+        <script src="https://unpkg.com/vue@next"></script>
+        <script src="https://unpkg.com/primevue@^3/core/core.js"></script>
+
+        <!-- Demo -->
+        <script src="https://unpkg.com/primevue@^3/datatable/datatable.min.js"></script>
+        <script src="https://unpkg.com/primevue@^3/column/column.min.js"></script>
+    </head>
+    <body>
+        <div id="app">
+            <p-datatable :value="products" :paginator="true" class="p-datatable-customers" :rows="10"
+                data-key="id" :row-hover="true" :filters="filters" filter-display="menu"
+                paginator-template="FirstPageLink PrevPageLink PageLinks NextPageLink LastPageLink CurrentPageReport RowsPerPageDropdown" :rows-per-page-options="[10,25,50]"
+                current-page-report-template="Showing {first} to {last} of {totalRecords} entries" responsive-layout="scroll">
+                <template #header>
+                    <div class="p-d-flex p-jc-between p-ai-center">
+                        <h5 class="p-m-0">Products</h5>
+                        <span class="p-input-icon-left">
+                            <i class="pi pi-search"></i>
+                            <p-inputtext v-model="filters['global'].value" placeholder="Search"></p-inputtext>
+                        </span>
+                    </div>
+                </template>
+                <p-column v-for="col in columns" :field="col.field" :header="col.header" :key="col.field" style="min-width: 14rem">
+                    <template #body="slotProps">
+                        {{slotProps.data[col.field]}}
+                    </template>
+                </p-column>
+                <p-column field="available_units" header="Edit Available Units" style="min-width: 14rem" key="available_units">
+                    <template #body="slotProps">
+                        <p-inputtext v-model="slotProps.data.available_units" class="p-inputtext-sm" placeholder="Edit Available Units"></p-inputtext>
+                    </template>
+                </p-column>
+            </p-datatable>
+        </div>
+    </template>
+
+    <script type="module">
+    const { createApp, ref, onMounted } = Vue;
+    const { FilterMatchMode, FilterOperator } = primevue.api;
+
+    const App = {
+        setup() {
+            const filters = ref({
+                global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+            });
+            const products = ref([
+                {id: 1, product: "Apple granny smith", package: "40 LB", available_units: 3000.65, category: "Fruits", last_update: "2021-05-10"},
+                {id: 2, product: "Banana green", package: "7 CT", available_units: 123.8, category: "Fruits", last_update: "2021-06-10"},
+                {id: 3, product: "Pineaple crownless", package: "7 CT", available_units: 120, category: "Fruits", last_update: "2021-07-10"},
+                {id: 4, product: "Banan green tip", package: "8 CT", available_units: 2987.98, category: "Fruits", last_update: "2021-08-10"},
+                {id: 5, product: "Red Tomatos", package: "40 LB", available_units: 5671.87, category: "Vegetables", last_update: "2021-09-10"},
+                {id: 6, product: "Orange", package: "10 LB", available_units: 1987.8, category: "Fruits", last_update: "2021-10-10"},
+                {id: 7, product: "Lettuce", package: "10 LB", available_units: 2000, category: "Vegetables", last_update: "2021-10-10"},
+            ]);
+
+            const columns = [
+              {field: 'id', header: "Item Code", placeholder: "Search by item code"},
+              {field: 'product', header: "Product", placeholder: "Search by product"},
+              {field: 'package', header: "Package", placeholder: "Search by package"},
+              {field: 'available_units', header: "Available Units", placeholder: "Search by available units"},
+              {field: 'category', header: "Category", placeholder: "Search by category"},
+              {field: 'last_update', header: "Last Update", placeholder: "Search by last update"},
+            ]
+
+            return {
+                products,
+                filters,
+                columns
+            };
+        },
+        components: {
+            "p-datatable": primevue.datatable,
+            "p-column": primevue.column,
+            "p-inputtext": primevue.inputtext,
+        }
+    };
+
+    const app = createApp(App);
+    app.use(primevue.config.default);
+    app.mount("#app");
+    </script>
+
+    <style lang="scss" scoped>
+    img {
+        vertical-align: middle;
+    }
+    .p-paginator .p-paginator-current {
+        margin-left: auto;
+    }
+
+    .p-progressbar {
+        height: .5rem;
+        background-color: #D8DADC;
+    }
+    .p-progressbar .p-progressbar-value {
+        background-color: #607D8B;
+    }
+
+    .p-datepicker {
+        min-width: 25rem;
+    }
+
+    .p-datepicker td {
+        font-weight: 400;
+    }
+
+    .p-datatable.p-datatable-customers .p-datatable-header {
+        padding: 1rem;
+        text-align: left;
+        font-size: 1.5rem;
+    }
+
+    .p-datatable.p-datatable-customers .p-paginator {
+        padding: 1rem;
+    }
+
+    .p-datatable.p-datatable-customers .p-datatable-thead > tr > th {
+        text-align: left;
+    }
+
+    .p-datatable.p-datatable-customers .p-datatable-tbody > tr > td {
+        cursor: auto;
+    }
+
+    .p-datatable.p-datatable-customers .p-dropdown-label:not(.p-placeholder) {
+        text-transform: uppercase;
+    }
+    </style>
+    </body>
+</html>
